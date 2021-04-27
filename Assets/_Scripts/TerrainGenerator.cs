@@ -27,33 +27,34 @@ public class TerrainGenerator : MonoBehaviour
         get => autoUpdate;
     }
 
-    public void GenerateTexture()
+    public void GenerateMap()
     {
         var noiseMap = GenerateNoiseMap();
-        Texture2D texture = new Texture2D(mapWidth, mapHeight);
         Color[] colorMap = new Color[mapWidth * mapHeight];
-
+        
         for (int y = 0; y < mapHeight; y++)
         {
             for (int x = 0; x < mapWidth; x++)
             {
-                switch (drawMode)
-                {
-                    case MapDrawMode.Noise:
-                        colorMap[y * mapWidth + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
-                        break;
-                    case MapDrawMode.Colored:
-                        colorMap[y * mapWidth + x] = GetHeightColor(noiseMap[x, y]);
-                        break;
-                }
+                colorMap[y * mapWidth + x] = GetHeightColor(noiseMap[x, y]);
             }
         }
+        
+        switch (drawMode)
+        {
+            case MapDrawMode.Noise:
+                DrawTexture(TextureGenerator.TextureFromHeightMap(noiseMap));
+                break;
+            case MapDrawMode.Colored:
+                DrawTexture(TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
+                break;
+            case MapDrawMode.Mesh:
+                break;
+        }
+    }
 
-        texture.filterMode = FilterMode.Point;
-        texture.wrapMode = TextureWrapMode.Clamp;
-        texture.SetPixels(colorMap);
-        texture.Apply();
-
+    private void DrawTexture(Texture2D texture)
+    {
         textureRenderer.sharedMaterial.mainTexture = texture;
         textureRenderer.transform.localScale = new Vector3(mapWidth, 1, mapHeight);
     }
@@ -174,7 +175,8 @@ public class TerrainGenerator : MonoBehaviour
     private enum MapDrawMode
     {
         Noise,
-        Colored
+        Colored,
+        Mesh
     }
 
     [System.Serializable]

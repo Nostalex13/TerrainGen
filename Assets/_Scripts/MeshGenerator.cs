@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class MeshGenerator
 {
-    public static void GenerateTerrainMesh(float[,] heightMap)
+    public static MeshData GenerateTerrainMesh(float[,] heightMap)
     {
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
@@ -19,10 +19,19 @@ public static class MeshGenerator
             for (int x = 0; x < width; x++)
             {
                 meshData.verticies[vertexIndex] = new Vector3(topLeftX + x, heightMap[x, y], topLeftZ - y);
+                meshData.uvs[vertexIndex] = new Vector2(x / (float) width, y / (float) height);
+
+                if (x < width - 1 && y < height - 1)
+                {
+                    meshData.AddTriangle(vertexIndex, vertexIndex + width + 1, vertexIndex + width);
+                    meshData.AddTriangle(vertexIndex + width + 1, vertexIndex , vertexIndex + 1);
+                }
                 
                 vertexIndex++;
             }
         }
+
+        return meshData;
     }
 }
  
@@ -30,12 +39,14 @@ public class MeshData
 {
     public Vector3[] verticies;
     public int[] triangles;
+    public Vector2[] uvs;
 
     private int triangleIndex;
 
     public MeshData(int meshWidth, int meshHeight)
     {
         verticies = new Vector3[meshHeight * meshHeight];
+        uvs = new Vector2[meshHeight * meshWidth];
         triangles = new int[(meshWidth - 1) * (meshHeight - 1) * 6];
     }
 
@@ -46,5 +57,16 @@ public class MeshData
         triangles[triangleIndex + 2] = c;
         
         triangleIndex += 3;
+    }
+
+    public Mesh CreateMesh()
+    {
+        Mesh mesh = new Mesh();
+        mesh.vertices = verticies;
+        mesh.triangles = triangles;
+        mesh.uv = uvs;
+        mesh.RecalculateNormals();
+        
+        return mesh;
     }
 }
