@@ -41,12 +41,12 @@ public class MeshData
     public int[] triangles;
     public Vector2[] uvs;
 
-    private int triangleIndex;
+    private int triangleIndex = 0;
 
     public MeshData(int meshWidth, int meshHeight)
     {
-        verticies = new Vector3[meshHeight * meshHeight];
-        uvs = new Vector2[meshHeight * meshWidth];
+        verticies = new Vector3[meshWidth * meshHeight];
+        uvs = new Vector2[meshWidth * meshHeight];
         triangles = new int[(meshWidth - 1) * (meshHeight - 1) * 6];
     }
 

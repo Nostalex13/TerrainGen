@@ -36,6 +36,7 @@ ExportedObj/
 *.vsconfig
 *.unityproj
 *.sln
+*.log
 *.suo
 *.tmp
 *.user

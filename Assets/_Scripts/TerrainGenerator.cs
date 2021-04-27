@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TerrainGenerator : MonoBehaviour
 {
     [SerializeField] private Renderer textureRenderer;
+    [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] private MeshFilter meshFilter;
 
     [SerializeField] private int mapWidth;
     [SerializeField] private int mapHeight;
@@ -35,7 +38,7 @@ public class TerrainGenerator : MonoBehaviour
         for (int y = 0; y < mapHeight; y++)
         {
             for (int x = 0; x < mapWidth; x++)
-            {
+            {     
                 colorMap[y * mapWidth + x] = GetHeightColor(noiseMap[x, y]);
             }
         }
@@ -49,6 +52,7 @@ public class TerrainGenerator : MonoBehaviour
                 DrawTexture(TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
                 break;
             case MapDrawMode.Mesh:
+                DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap), TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
                 break;
         }
     }
@@ -59,16 +63,21 @@ public class TerrainGenerator : MonoBehaviour
         textureRenderer.transform.localScale = new Vector3(mapWidth, 1, mapHeight);
     }
 
+    private void DrawMesh(MeshData meshData, Texture2D texture)
+    {
+        meshFilter.sharedMesh = meshData.CreateMesh();
+        meshRenderer.sharedMaterial.mainTexture = texture;
+    }
+
+    public void ClearMesh()
+    {
+        meshFilter.sharedMesh = null;
+    }
+
     private Color GetHeightColor(float height)
     {
-        if (regions.Length == 0)
-        {
-            Debug.Log("<color=red>Error!</color> Regions are not specified");
-            return Color.black;
-        }
-        
         Color color = regions[0].color;
-        
+                        
         for (int i = 0; i < regions.Length; i++)
         { 
             if (height >= regions[i].height)
@@ -76,7 +85,7 @@ public class TerrainGenerator : MonoBehaviour
                 color = regions[i].color;
             }
         }
-
+                        
         return color;
     }
 
@@ -129,7 +138,7 @@ public class TerrainGenerator : MonoBehaviour
                 {
                     maxNoiseHeight = noiseHeight;
                 }
-                else if (noiseHeight < minNoiseHeight)
+                if (noiseHeight < minNoiseHeight)
                 {
                     minNoiseHeight = noiseHeight;
                 }
