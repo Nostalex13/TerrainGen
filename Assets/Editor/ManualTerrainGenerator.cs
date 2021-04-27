@@ -15,13 +15,13 @@ public class ManualTerrainGenerator : Editor
         {
             if (terrainGenerator.AutoUpdate)
             {
-                terrainGenerator.GenerateTerrain();
+                terrainGenerator.GenerateTexture();
             }
         }
 
         if (GUILayout.Button("Generate Terrain"))
         {
-            terrainGenerator.GenerateTerrain();
+            terrainGenerator.GenerateTexture();
         }
     }
 }

@@ -200,7 +200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.2797343, y: -0, z: -0, w: 0.9600775}
-  m_LocalPosition: {x: 0, y: 116.13, z: -233.23}
+  m_LocalPosition: {x: 0, y: 533, z: -1295}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -282,7 +282,7 @@ Transform:
   m_GameObject: {fileID: 1157112807}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 300, y: 1, z: 300}
+  m_LocalScale: {x: 350, y: 1, z: 350}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -317,15 +317,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textureRenderer: {fileID: 1157112808}
-  mapWidth: 300
-  mapHeight: 300
-  noiseScale: 35.8
-  octaves: 3
-  persistance: 0.389
-  lacunarity: 1.8
-  seed: 81
-  offset: {x: 408.1, y: -10.1}
+  mapWidth: 350
+  mapHeight: 350
+  noiseScale: 80.31
+  octaves: 4
+  persistance: 0.5
+  lacunarity: 2.5
+  seed: 3
+  offset: {x: 35.4, y: 0}
   autoUpdate: 1
+  drawMode: 1
+  regions:
+  - name: Deep Water
+    height: 0
+    color: {r: 0.19848809, g: 0.19579923, b: 0.754717, a: 1}
+  - name: Water
+    height: 0.25
+    color: {r: 0.14173192, g: 0.6007226, b: 0.8584906, a: 1}
+  - name: Sand
+    height: 0.4
+    color: {r: 0.12646852, g: 0.9245283, b: 0.7080932, a: 1}
+  - name: Land
+    height: 0.5
+    color: {r: 0.05833925, g: 0.6509434, b: 0.1667042, a: 1}
+  - name: Hill
+    height: 0.65
+    color: {r: 0.16237986, g: 0.38679248, b: 0.20399281, a: 1}
+  - name: Mountain
+    height: 0.75
+    color: {r: 0.116545044, g: 0.254717, b: 0.14275005, a: 1}
+  - name: Snowy Mountain
+    height: 0.9
+    color: {r: 0.6427109, g: 0.9250035, b: 0.9528302, a: 1}
 --- !u!4 &1323395430
 Transform:
   m_ObjectHideFlags: 0

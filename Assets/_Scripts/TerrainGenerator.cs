@@ -19,13 +19,15 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private Vector2 offset;
 
     [Space] [SerializeField] private bool autoUpdate = false;
+    [SerializeField] private MapDrawMode drawMode = MapDrawMode.Noise;
+    [SerializeField] private TerrainType[] regions;
 
     public bool AutoUpdate
     {
         get => autoUpdate;
     }
 
-    public void GenerateTerrain()
+    public void GenerateTexture()
     {
         var noiseMap = GenerateNoiseMap();
         Texture2D texture = new Texture2D(mapWidth, mapHeight);
@@ -35,15 +37,46 @@ public class TerrainGenerator : MonoBehaviour
         {
             for (int x = 0; x < mapWidth; x++)
             {
-                colorMap[y * mapWidth + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
+                switch (drawMode)
+                {
+                    case MapDrawMode.Noise:
+                        colorMap[y * mapWidth + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
+                        break;
+                    case MapDrawMode.Colored:
+                        colorMap[y * mapWidth + x] = GetHeightColor(noiseMap[x, y]);
+                        break;
+                }
             }
         }
 
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
         texture.SetPixels(colorMap);
         texture.Apply();
 
         textureRenderer.sharedMaterial.mainTexture = texture;
         textureRenderer.transform.localScale = new Vector3(mapWidth, 1, mapHeight);
+    }
+
+    private Color GetHeightColor(float height)
+    {
+        if (regions.Length == 0)
+        {
+            Debug.Log("<color=red>Error!</color> Regions are not specified");
+            return Color.black;
+        }
+        
+        Color color = regions[0].color;
+        
+        for (int i = 0; i < regions.Length; i++)
+        { 
+            if (height >= regions[i].height)
+            {
+                color = regions[i].color;
+            }
+        }
+
+        return color;
     }
 
     private float[,] GenerateNoiseMap()
@@ -136,5 +169,19 @@ public class TerrainGenerator : MonoBehaviour
         {
             octaves = 1;
         }
+    }
+
+    private enum MapDrawMode
+    {
+        Noise,
+        Colored
+    }
+
+    [System.Serializable]
+    private struct TerrainType
+    {
+        public string name;
+        public float height;
+        public Color color;
     }
 }
