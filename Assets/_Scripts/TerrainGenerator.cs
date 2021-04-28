@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class TerrainGenerator : MonoBehaviour
@@ -10,9 +11,10 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private MeshFilter meshFilter;
 
-    [SerializeField] private int mapWidth;
-    [SerializeField] private int mapHeight;
+    [Range(0, 6)] [SerializeField] private int levelOfDetail;
     [SerializeField] private float noiseScale;
+    [SerializeField] private float meshHeightMultiplier;
+    [SerializeField] private AnimationCurve heightCurve;
 
     [SerializeField] private int octaves;
     [Range(0f, 1f)] [SerializeField] private float persistance;
@@ -25,6 +27,8 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private MapDrawMode drawMode = MapDrawMode.Noise;
     [SerializeField] private TerrainType[] regions;
 
+    public const int mapChunkSize = 241; // Actual mesh size is going to be 240x240
+
     public bool AutoUpdate
     {
         get => autoUpdate;
@@ -33,26 +37,27 @@ public class TerrainGenerator : MonoBehaviour
     public void GenerateMap()
     {
         var noiseMap = GenerateNoiseMap();
-        Color[] colorMap = new Color[mapWidth * mapHeight];
-        
-        for (int y = 0; y < mapHeight; y++)
+        Color[] colorMap = new Color[mapChunkSize * mapChunkSize];
+
+        for (int y = 0; y < mapChunkSize; y++)
         {
-            for (int x = 0; x < mapWidth; x++)
-            {     
-                colorMap[y * mapWidth + x] = GetHeightColor(noiseMap[x, y]);
+            for (int x = 0; x < mapChunkSize; x++)
+            {
+                colorMap[y * mapChunkSize + x] = GetHeightColor(noiseMap[x, y]);
             }
         }
-        
+
         switch (drawMode)
         {
             case MapDrawMode.Noise:
                 DrawTexture(TextureGenerator.TextureFromHeightMap(noiseMap));
                 break;
             case MapDrawMode.Colored:
-                DrawTexture(TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
+                DrawTexture(TextureGenerator.TextureFromColorMap(colorMap, mapChunkSize, mapChunkSize));
                 break;
             case MapDrawMode.Mesh:
-                DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap), TextureGenerator.TextureFromColorMap(colorMap, mapWidth, mapHeight));
+                DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, heightCurve, levelOfDetail),
+                    TextureGenerator.TextureFromColorMap(colorMap, mapChunkSize, mapChunkSize));
                 break;
         }
     }
@@ -60,7 +65,7 @@ public class TerrainGenerator : MonoBehaviour
     private void DrawTexture(Texture2D texture)
     {
         textureRenderer.sharedMaterial.mainTexture = texture;
-        textureRenderer.transform.localScale = new Vector3(mapWidth, 1, mapHeight);
+        textureRenderer.transform.localScale = new Vector3(mapChunkSize, 1, mapChunkSize);
     }
 
     private void DrawMesh(MeshData meshData, Texture2D texture)
@@ -77,21 +82,21 @@ public class TerrainGenerator : MonoBehaviour
     private Color GetHeightColor(float height)
     {
         Color color = regions[0].color;
-                        
+
         for (int i = 0; i < regions.Length; i++)
-        { 
+        {
             if (height >= regions[i].height)
             {
                 color = regions[i].color;
             }
         }
-                        
+
         return color;
     }
 
     private float[,] GenerateNoiseMap()
     {
-        var noiseMap = new float[mapWidth, mapHeight];
+        var noiseMap = new float[mapChunkSize, mapChunkSize];
 
         if (noiseScale <= 0f)
         {
@@ -111,12 +116,12 @@ public class TerrainGenerator : MonoBehaviour
         float maxNoiseHeight = float.MinValue;
         float minNoiseHeight = float.MaxValue;
 
-        float halfWidth = mapWidth * 0.5f;
-        float halfHeight = mapHeight * 0.5f;
+        float halfWidth = mapChunkSize * 0.5f;
+        float halfHeight = mapChunkSize * 0.5f;
 
-        for (int y = 0; y < mapHeight; y++)
+        for (int y = 0; y < mapChunkSize; y++)
         {
-            for (int x = 0; x < mapWidth; x++)
+            for (int x = 0; x < mapChunkSize; x++)
             {
                 float amplitude = 1;
                 float frequency = 1;
@@ -138,6 +143,7 @@ public class TerrainGenerator : MonoBehaviour
                 {
                     maxNoiseHeight = noiseHeight;
                 }
+
                 if (noiseHeight < minNoiseHeight)
                 {
                     minNoiseHeight = noiseHeight;
@@ -147,9 +153,9 @@ public class TerrainGenerator : MonoBehaviour
             }
         }
 
-        for (int y = 0; y < mapHeight; y++)
+        for (int y = 0; y < mapChunkSize; y++)
         {
-            for (int x = 0; x < mapWidth; x++)
+            for (int x = 0; x < mapChunkSize; x++)
             {
                 noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
             }
@@ -160,16 +166,6 @@ public class TerrainGenerator : MonoBehaviour
 
     private void OnValidate()
     {
-        if (mapHeight < 1)
-        {
-            mapHeight = 1;
-        }
-
-        if (mapWidth < 1)
-        {
-            mapWidth = 1;
-        }
-
         if (lacunarity < 1)
         {
             lacunarity = 1;
