@@ -12,7 +12,7 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private MeshFilter meshFilter;
 
-    [Range(0, 6)] [SerializeField] private int levelOfDetail;
+    [Range(0, 6)] [SerializeField] private int previewLevelOfDetail;
     [SerializeField] private float noiseScale;
     [SerializeField] private float meshHeightMultiplier;
     [SerializeField] private AnimationCurve heightCurve;
@@ -40,9 +40,9 @@ public class TerrainGenerator : MonoBehaviour
 
     #region Drawing Map
 
-    private MapData GenerateMapData()
+    private MapData GenerateMapData(Vector2 center)
     {
-        var noiseMap = GenerateNoiseMap();
+        var noiseMap = GenerateNoiseMap(center);
         Color[] colorMap = new Color[mapChunkSize * mapChunkSize];
 
         for (int y = 0; y < mapChunkSize; y++)
@@ -62,7 +62,7 @@ public class TerrainGenerator : MonoBehaviour
 
     public void DrawMapInEditor()
     {
-        MapData mapData = GenerateMapData();
+        MapData mapData = GenerateMapData(Vector2.zero);
 
         switch (drawMode)
         {
@@ -75,7 +75,7 @@ public class TerrainGenerator : MonoBehaviour
             case MapDrawMode.Mesh:
                 DrawMesh(
                     MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, heightCurve,
-                        levelOfDetail),
+                        previewLevelOfDetail),
                     TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
                 break;
         }
@@ -113,8 +113,9 @@ public class TerrainGenerator : MonoBehaviour
         return color;
     }
 
-    private float[,] GenerateNoiseMap()
+    private float[,] GenerateNoiseMap(Vector2 positionOffset)
     {
+        positionOffset += offset;
         var noiseMap = new float[mapChunkSize, mapChunkSize];
 
         if (noiseScale <= 0f)
@@ -127,8 +128,8 @@ public class TerrainGenerator : MonoBehaviour
 
         for (int i = 0; i < octaves; i++)
         {
-            float offsetX = random.Next(-100000, 100000) + offset.x;
-            float offsetY = random.Next(-100000, 100000) + offset.y;
+            float offsetX = random.Next(-100000, 100000) + positionOffset.x;
+            float offsetY = random.Next(-100000, 100000) + positionOffset.y;
             octaveOffsets[i] = new Vector2(offsetX, offsetY);
         }
 
@@ -185,33 +186,33 @@ public class TerrainGenerator : MonoBehaviour
 
     #endregion
     
-    public void RequestMeshData(MapData mapData, Action<MeshData> callback)
+    public void RequestMeshData(MapData mapData, Action<MeshData> callback, int lod)
     {
-        ThreadStart threadStart = delegate { MeshDataThread(mapData, callback); };
+        ThreadStart threadStart = delegate { MeshDataThread(mapData, callback, lod); };
 
         new Thread(threadStart).Start();
     }
 
-    private void MeshDataThread(MapData mapData, Action<MeshData> callback)
+    private void MeshDataThread(MapData mapData, Action<MeshData> callback, int lod)
     {
         MeshData meshData =
-            MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, heightCurve, levelOfDetail);
+            MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, heightCurve, lod);
         lock (meshDataThreadQueue)
         {
             meshDataThreadQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
         }
     }
 
-    public void RequestMapData(Action<MapData> callback)
+    public void RequestMapData(Action<MapData> callback, Vector2 center)
     {
-        ThreadStart threadStart = delegate { MapDataThread(callback); };
+        ThreadStart threadStart = delegate { MapDataThread(callback, center); };
 
         new Thread(threadStart).Start();
     }
 
-    private void MapDataThread(Action<MapData> callback)
+    private void MapDataThread(Action<MapData> callback, Vector2 center)
     {
-        MapData mapData = GenerateMapData();
+        MapData mapData = GenerateMapData(center);
         lock (mapDataThreadQueue)
         {
             mapDataThreadQueue.Enqueue(new MapThreadInfo<MapData>(callback, mapData));
