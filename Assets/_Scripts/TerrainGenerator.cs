@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,13 +29,18 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private TerrainType[] regions;
 
     public const int mapChunkSize = 241; // Actual mesh size is going to be 240x240
+    
+    private Queue<MapThreadInfo<MapData>> mapDataThreadQueue = new Queue<MapThreadInfo<MapData>>();
+    private Queue<MapThreadInfo<MeshData>> meshDataThreadQueue = new Queue<MapThreadInfo<MeshData>>();
 
     public bool AutoUpdate
     {
         get => autoUpdate;
     }
 
-    public void GenerateMap()
+    #region Drawing Map
+
+    private MapData GenerateMapData()
     {
         var noiseMap = GenerateNoiseMap();
         Color[] colorMap = new Color[mapChunkSize * mapChunkSize];
@@ -47,17 +53,30 @@ public class TerrainGenerator : MonoBehaviour
             }
         }
 
+        return new MapData()
+        {
+            colorMap = colorMap,
+            heightMap = noiseMap
+        };
+    }
+
+    public void DrawMapInEditor()
+    {
+        MapData mapData = GenerateMapData();
+
         switch (drawMode)
         {
             case MapDrawMode.Noise:
-                DrawTexture(TextureGenerator.TextureFromHeightMap(noiseMap));
+                DrawTexture(TextureGenerator.TextureFromHeightMap(mapData.heightMap));
                 break;
             case MapDrawMode.Colored:
-                DrawTexture(TextureGenerator.TextureFromColorMap(colorMap, mapChunkSize, mapChunkSize));
+                DrawTexture(TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
                 break;
             case MapDrawMode.Mesh:
-                DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, heightCurve, levelOfDetail),
-                    TextureGenerator.TextureFromColorMap(colorMap, mapChunkSize, mapChunkSize));
+                DrawMesh(
+                    MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, heightCurve,
+                        levelOfDetail),
+                    TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
                 break;
         }
     }
@@ -164,6 +183,62 @@ public class TerrainGenerator : MonoBehaviour
         return noiseMap;
     }
 
+    #endregion
+    
+    public void RequestMeshData(MapData mapData, Action<MeshData> callback)
+    {
+        ThreadStart threadStart = delegate { MeshDataThread(mapData, callback); };
+
+        new Thread(threadStart).Start();
+    }
+
+    private void MeshDataThread(MapData mapData, Action<MeshData> callback)
+    {
+        MeshData meshData =
+            MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, heightCurve, levelOfDetail);
+        lock (meshDataThreadQueue)
+        {
+            meshDataThreadQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
+        }
+    }
+
+    public void RequestMapData(Action<MapData> callback)
+    {
+        ThreadStart threadStart = delegate { MapDataThread(callback); };
+
+        new Thread(threadStart).Start();
+    }
+
+    private void MapDataThread(Action<MapData> callback)
+    {
+        MapData mapData = GenerateMapData();
+        lock (mapDataThreadQueue)
+        {
+            mapDataThreadQueue.Enqueue(new MapThreadInfo<MapData>(callback, mapData));
+        }
+    }
+
+    private void Update()
+    {
+        if (mapDataThreadQueue.Count > 0)
+        {
+            for (int i = 0; i < mapDataThreadQueue.Count; i++)
+            {
+                MapThreadInfo<MapData> threadInfo = mapDataThreadQueue.Dequeue();
+                threadInfo.callback(threadInfo.parameter);
+            }
+        }
+        
+        if (meshDataThreadQueue.Count > 0)
+        {
+            for (int i = 0; i < meshDataThreadQueue.Count; i++)
+            {
+                MapThreadInfo<MeshData> threadInfo = meshDataThreadQueue.Dequeue();
+                threadInfo.callback(threadInfo.parameter);
+            }
+        }
+    }
+
     private void OnValidate()
     {
         if (lacunarity < 1)
@@ -176,6 +251,8 @@ public class TerrainGenerator : MonoBehaviour
             octaves = 1;
         }
     }
+
+    #region Info types
 
     private enum MapDrawMode
     {
@@ -191,4 +268,30 @@ public class TerrainGenerator : MonoBehaviour
         public float height;
         public Color color;
     }
+
+    private readonly struct MapThreadInfo<T>
+    {
+        public readonly Action<T> callback;
+        public readonly T parameter;
+
+        public MapThreadInfo(Action<T> callback, T parameter)
+        {
+            this.parameter = parameter;
+            this.callback = callback;
+        }
+    }
+
+    public struct MapData
+    {
+        public float[,] heightMap;
+        public Color[] colorMap;
+
+        public MapData(Color[] colorMap, float[,] heightMap)
+        {
+            this.colorMap = colorMap;
+            this.heightMap = heightMap;
+        }
+    }
+    
+    #endregion
 }
