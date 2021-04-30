@@ -26,6 +26,7 @@ public class TerrainGenerator : MonoBehaviour
 
     [Space] [SerializeField] private bool autoUpdate = false;
     [SerializeField] private MapDrawMode drawMode = MapDrawMode.Noise;
+    [SerializeField] private NormalizeMode normalizeMode;
     [SerializeField] private TerrainType[] regions;
 
     public const int mapChunkSize = 241; // Actual mesh size is going to be 240x240
@@ -125,16 +126,22 @@ public class TerrainGenerator : MonoBehaviour
 
         var random = new System.Random(seed);
         Vector2[] octaveOffsets = new Vector2[octaves];
+        float maxPossibleHeight = 0;
+        float amplitude = 1;
+        float frequency = 1;
 
         for (int i = 0; i < octaves; i++)
         {
             float offsetX = random.Next(-100000, 100000) + positionOffset.x;
-            float offsetY = random.Next(-100000, 100000) + positionOffset.y;
+            float offsetY = random.Next(-100000, 100000) - positionOffset.y;
             octaveOffsets[i] = new Vector2(offsetX, offsetY);
+
+            maxPossibleHeight += amplitude;
+            amplitude *= persistance;
         }
 
-        float maxNoiseHeight = float.MinValue;
-        float minNoiseHeight = float.MaxValue;
+        float maxLocalNoiseHeight = float.MinValue;
+        float minLocalNoiseHeight = float.MaxValue;
 
         float halfWidth = mapChunkSize * 0.5f;
         float halfHeight = mapChunkSize * 0.5f;
@@ -143,14 +150,14 @@ public class TerrainGenerator : MonoBehaviour
         {
             for (int x = 0; x < mapChunkSize; x++)
             {
-                float amplitude = 1;
-                float frequency = 1;
+                amplitude = 1;
+                frequency = 1;
                 float noiseHeight = 0;
 
                 for (int i = 0; i < octaves; i++)
                 {
-                    float sampleX = (x - halfWidth) / noiseScale * frequency + octaveOffsets[i].x;
-                    float sampleY = (y - halfHeight) / noiseScale * frequency + octaveOffsets[i].y;
+                    float sampleX = (x - halfWidth + octaveOffsets[i].x) / noiseScale * frequency;
+                    float sampleY = (y - halfHeight + octaveOffsets[i].y) / noiseScale * frequency;
 
                     float perlineVal = Mathf.PerlinNoise(sampleX, sampleY) * 2f - 1f;
                     noiseHeight += perlineVal * amplitude;
@@ -159,14 +166,14 @@ public class TerrainGenerator : MonoBehaviour
                     frequency *= lacunarity;
                 }
 
-                if (noiseHeight > maxNoiseHeight)
+                if (noiseHeight > maxLocalNoiseHeight)
                 {
-                    maxNoiseHeight = noiseHeight;
+                    maxLocalNoiseHeight = noiseHeight;
                 }
 
-                if (noiseHeight < minNoiseHeight)
+                if (noiseHeight < minLocalNoiseHeight)
                 {
-                    minNoiseHeight = noiseHeight;
+                    minLocalNoiseHeight = noiseHeight;
                 }
 
                 noiseMap[x, y] = noiseHeight;
@@ -177,7 +184,16 @@ public class TerrainGenerator : MonoBehaviour
         {
             for (int x = 0; x < mapChunkSize; x++)
             {
-                noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
+                switch (normalizeMode)
+                {
+                    case NormalizeMode.Local:
+                        noiseMap[x, y] = Mathf.InverseLerp(minLocalNoiseHeight, maxLocalNoiseHeight, noiseMap[x, y]);
+                        break;
+                    case NormalizeMode.Global:
+                        float normalizedHeight = (noiseMap[x, y] + 1) / (2f * maxPossibleHeight / 1.7f);
+                        noiseMap[x, y] = Mathf.Clamp(normalizedHeight, 0, int.MaxValue);
+                        break;
+                }
             }
         }
 
@@ -260,6 +276,12 @@ public class TerrainGenerator : MonoBehaviour
         Noise,
         Colored,
         Mesh
+    }
+
+    public enum NormalizeMode
+    {
+        Local,
+        Global
     }
 
     [System.Serializable]

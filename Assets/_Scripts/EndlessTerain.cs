@@ -7,6 +7,7 @@ public class EndlessTerain : MonoBehaviour
 {
     [SerializeField] private Transform viewer;
 
+    private const float scale = 1f;
     private const float viewerThresholdForChunkUpdate = 25f;
 
     private const float sqrviewerThresholdForChunkUpdate =
@@ -22,7 +23,7 @@ public class EndlessTerain : MonoBehaviour
     private int chunksVisible;
 
     Dictionary<Vector2, TerrainChunk> terrainChunksDict = new Dictionary<Vector2, TerrainChunk>();
-    private List<TerrainChunk> terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
+    private static List<TerrainChunk> terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
     
     private void Start()
     {
@@ -37,7 +38,7 @@ public class EndlessTerain : MonoBehaviour
     private void Update()
     {
         var position = viewer.position;
-        viewerPosition = new Vector2(position.x, position.z);
+        viewerPosition = new Vector2(position.x, position.z) / scale;
         
         if ((viewerPositionOld - viewerPosition).sqrMagnitude > sqrviewerThresholdForChunkUpdate)
         {
@@ -66,11 +67,6 @@ public class EndlessTerain : MonoBehaviour
                 if (terrainChunksDict.ContainsKey(viewedChunkCoord))
                 {
                     terrainChunksDict[viewedChunkCoord].UpdateChunk();
-                    
-                    if (terrainChunksDict[viewedChunkCoord].IsVisible())
-                    {
-                        terrainChunksVisibleLastUpdate.Add(terrainChunksDict[viewedChunkCoord]);
-                    }
                 }
                 else
                 {
@@ -107,8 +103,9 @@ public class EndlessTerain : MonoBehaviour
             meshFilter = meshObject.AddComponent<MeshFilter>();
             meshRenderer.material = material;
             
-            meshObject.transform.position = positionV3;
+            meshObject.transform.position = positionV3 * scale;
             meshObject.transform.parent = parent;
+            meshObject.transform.localScale = Vector3.one * scale;
             SetVisible(false);
 
             lodMeshes = new LODMesh[detailLevels.Length];
@@ -161,6 +158,8 @@ public class EndlessTerain : MonoBehaviour
                         lodMesh.RequestMesh(mapData);
                     }
                 }
+
+                terrainChunksVisibleLastUpdate.Add(this);
             }
             
             SetVisible(visible);
@@ -183,7 +182,7 @@ public class EndlessTerain : MonoBehaviour
 
             Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap, TerrainGenerator.mapChunkSize,
                 TerrainGenerator.mapChunkSize);
-            meshRenderer.sharedMaterial.mainTexture = texture;
+            meshRenderer.material.mainTexture = texture;
             
             UpdateChunk();
         }
