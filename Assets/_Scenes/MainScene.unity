@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 339399771}
   - component: {fileID: 339399770}
   - component: {fileID: 339399769}
+  - component: {fileID: 339399772}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -204,6 +205,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &339399772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339399768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c0d8d571693f7a4592c1a88585aef61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -298,6 +311,7 @@ GameObject:
   - component: {fileID: 1157112810}
   - component: {fileID: 1157112809}
   - component: {fileID: 1157112808}
+  - component: {fileID: 1157112811}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -363,11 +377,23 @@ Transform:
   m_GameObject: {fileID: 1157112807}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 241, y: 1, z: 241}
+  m_LocalScale: {x: 239, y: 1, z: 239}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1157112811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157112807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c0d8d571693f7a4592c1a88585aef61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1323395428
 GameObject:
   m_ObjectHideFlags: 0
@@ -441,7 +467,7 @@ MonoBehaviour:
   persistance: 0.5
   lacunarity: 2.5
   seed: 2
-  offset: {x: -972.56, y: 0}
+  offset: {x: 0, y: 0}
   autoUpdate: 1
   drawMode: 2
   doApplyFallofMap: 0
@@ -498,10 +524,13 @@ MonoBehaviour:
   detailLevels:
   - lod: 0
     visibleDistanceThreshold: 200
+    useForCollider: 0
   - lod: 3
     visibleDistanceThreshold: 400
+    useForCollider: 0
   - lod: 6
     visibleDistanceThreshold: 600
+    useForCollider: 0
   mapMaterial: {fileID: 2100000, guid: f150fa8dfef04894b819a8488f8a1569, type: 2}
 --- !u!1 &1944625643
 GameObject:
