@@ -27,10 +27,9 @@ public class TerrainGenerator : MonoBehaviour
     [Space] [SerializeField] private bool autoUpdate = false;
     [SerializeField] private MapDrawMode drawMode = MapDrawMode.Noise;
     [SerializeField] private bool doApplyFallofMap = false;
+    [SerializeField] private bool useFlatShading = false;
     [SerializeField] private NormalizeMode normalizeMode;
     [SerializeField] private TerrainType[] regions;
-
-    public const int mapChunkSize = 239; // Actual mesh size is going to be 240x240
 
     private float[,] falloffMap;
     private Queue<MapThreadInfo<MapData>> mapDataThreadQueue = new Queue<MapThreadInfo<MapData>>();
@@ -40,6 +39,9 @@ public class TerrainGenerator : MonoBehaviour
     {
         get => autoUpdate;
     }
+
+    public const int mapChunkSize = 239; // Actual mesh size is going to be +1 size
+    // public const int mapChunkSize = 95; // For flat shading 
 
     private void Awake()
     {
@@ -88,7 +90,7 @@ public class TerrainGenerator : MonoBehaviour
             case MapDrawMode.Mesh:
                 DrawMesh(
                     MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, heightCurve,
-                        previewLevelOfDetail),
+                        previewLevelOfDetail, useFlatShading),
                     TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
                 break;
             case MapDrawMode.FalloffMap:
@@ -228,7 +230,7 @@ public class TerrainGenerator : MonoBehaviour
     private void MeshDataThread(MapData mapData, Action<MeshData> callback, int lod)
     {
         MeshData meshData =
-            MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, heightCurve, lod);
+            MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, heightCurve, lod, useFlatShading);
         lock (meshDataThreadQueue)
         {
             meshDataThreadQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
