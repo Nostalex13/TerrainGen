@@ -7,7 +7,6 @@ public class EndlessTerain : MonoBehaviour
 {
     [SerializeField] private Transform viewer;
 
-    private const float scale = 1f;
     private const float viewerThresholdForChunkUpdate = 25f;
 
     private const float sqrviewerThresholdForChunkUpdate =
@@ -38,7 +37,7 @@ public class EndlessTerain : MonoBehaviour
     private void Update()
     {
         var position = viewer.position;
-        viewerPosition = new Vector2(position.x, position.z) / scale;
+        viewerPosition = new Vector2(position.x, position.z) / terrainGenerator.NoiseData.noiseScale;
         
         if ((viewerPositionOld - viewerPosition).sqrMagnitude > sqrviewerThresholdForChunkUpdate)
         {
@@ -107,9 +106,9 @@ public class EndlessTerain : MonoBehaviour
             meshCollider = meshObject.AddComponent<MeshCollider>();
             meshRenderer.material = material;
             
-            meshObject.transform.position = positionV3 * scale;
+            meshObject.transform.position = positionV3 * terrainGenerator.NoiseData.noiseScale;
             meshObject.transform.parent = parent;
-            meshObject.transform.localScale = Vector3.one * scale;
+            meshObject.transform.localScale = Vector3.one * terrainGenerator.NoiseData.noiseScale;
             SetVisible(false);
 
             lodMeshes = new LODMesh[detailLevels.Length];
@@ -201,10 +200,10 @@ public class EndlessTerain : MonoBehaviour
             this.mapData = mapData;
             mapDataReceived = true;
 
-            Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap, TerrainGenerator.mapChunkSize,
-                TerrainGenerator.mapChunkSize);
-            meshRenderer.material.mainTexture = texture;
-            
+            // Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap, TerrainGenerator.mapChunkSize,
+            //     TerrainGenerator.mapChunkSize);
+            // meshRenderer.material.mainTexture = texture;
+            //
             UpdateChunk();
         }
         
