@@ -10,14 +10,18 @@ public class TerrainGenerator : MonoBehaviour
 {
     [SerializeField] private TerrainData terrainData;
     [SerializeField] private NoiseData noiseData;
+    [SerializeField] private TextureData textureData;
 
     [Space] [SerializeField] private Renderer textureRenderer;
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private MeshFilter meshFilter;
-    [SerializeField] private TextureData textureData;
     [SerializeField] private Material terrainMaterial;
 
-    [Range(0, 6)] [SerializeField] private int previewLevelOfDetail;
+    [Range(0, MeshGenerator.supportedChunkSizesLength - 1)]
+    public int chunkSizeIndex;
+    [Range(0, MeshGenerator.supportedFlatshadedChunkSizesLength - 1)]
+    public int chunkFlatshadedSizeIndex;
+    [Range(0, MeshGenerator.supportedLODs - 1)] [SerializeField] private int previewLevelOfDetail;
 
     [Space] [SerializeField] private bool autoUpdate = false;
     [SerializeField] private MapDrawMode drawMode = MapDrawMode.Noise;
@@ -30,14 +34,32 @@ public class TerrainGenerator : MonoBehaviour
     public TerrainData TerrainData => terrainData;
     public NoiseData NoiseData => noiseData;
 
-    public const int mapChunkSize = 239; // Actual mesh size is going to be +1 size
-    // public const int mapChunkSize = 95; // For flat shading 
+    public int mapChunkSize
+    {
+        get
+        {
+            if (terrainData.useFlatShading)
+            {
+                return MeshGenerator.supportedFlatshadedChunkSizes[chunkFlatshadedSizeIndex] - 1; // For flat shading smaller chunk sizes are required
+            }
+            else
+            {
+                return MeshGenerator.supportedChunkSizes[chunkSizeIndex] - 1;
+            }
+        }
+    }
+
+    private void Awake()
+    {
+        textureData.UpdateMeshHeight(terrainMaterial, terrainData.MinHeight, terrainData.MaxHeight);
+        textureData.ApplyToMaterial(terrainMaterial);
+    }
 
     private void OnValuesUpdated()
     {
         if (!Application.isPlaying)
         {
-            DrawMapInEditor();
+            DrawMap_Editor();
         }
     }
 
@@ -69,44 +91,45 @@ public class TerrainGenerator : MonoBehaviour
                 }
             }
         }
-
+        
         return new MapData()
         {
             heightMap = noiseMap
         };
     }
 
-    public void DrawMapInEditor()
+    public void DrawMap_Editor()
     {
+        textureData.UpdateMeshHeight(terrainMaterial, terrainData.MinHeight, terrainData.MaxHeight);
         MapData mapData = GenerateMapData(Vector2.zero);
 
         switch (drawMode)
         {
             case MapDrawMode.Noise:
-                DrawTexture(TextureGenerator.TextureFromHeightMap(mapData.heightMap));
+                DrawTexture_Editor(TextureGenerator.TextureFromHeightMap(mapData.heightMap));
                 break;
             case MapDrawMode.Mesh:
-                DrawMesh(
+                DrawMesh_Editor(
                     MeshGenerator.GenerateTerrainMesh(mapData.heightMap, terrainData.meshHeightMultiplier,
                         terrainData.heightCurve,
                         previewLevelOfDetail, terrainData.useFlatShading));
                 break;
             case MapDrawMode.FalloffMap:
-                DrawTexture(TextureGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSize)));
+                DrawTexture_Editor(TextureGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSize)));
                 break;
         }
     }
 
-    private void DrawTexture(Texture2D texture)
+    private void DrawTexture_Editor(Texture2D texture)
     {
         textureRenderer.sharedMaterial.mainTexture = texture;
-        textureRenderer.transform.localScale = new Vector3(mapChunkSize, 1, mapChunkSize);
+        textureRenderer.transform.localScale = Vector3.one;
     }
 
-    private void DrawMesh(MeshData meshData)
+    private void DrawMesh_Editor(MeshData meshData)
     {
         meshFilter.sharedMesh = meshData.CreateMesh();
-        meshFilter.transform.localScale = Vector3.one * noiseData.noiseScale;
+        meshFilter.transform.localScale = Vector3.one * TerrainData.uniformScale;
     }
 
     public void ClearMesh()

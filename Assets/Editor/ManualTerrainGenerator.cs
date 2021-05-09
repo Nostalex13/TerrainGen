@@ -15,13 +15,13 @@ public class ManualTerrainGenerator : Editor
         {
             if (terrainGenerator.AutoUpdate)
             {
-                terrainGenerator.DrawMapInEditor();
+                terrainGenerator.DrawMap_Editor();
             }
         }
 
         if (GUILayout.Button("Generate Terrain"))
         {
-            terrainGenerator.DrawMapInEditor();
+            terrainGenerator.DrawMap_Editor();
         }
         
         if (GUILayout.Button("Clear Mesh"))

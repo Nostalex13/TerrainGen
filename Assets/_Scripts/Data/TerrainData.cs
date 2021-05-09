@@ -11,4 +11,7 @@ public class TerrainData : UpdatableData
     
     public bool doApplyFallofMap = false;
     public bool useFlatShading = false;
+
+    public float MinHeight => uniformScale * meshHeightMultiplier * heightCurve.Evaluate(0);
+    public float MaxHeight => uniformScale * meshHeightMultiplier * heightCurve.Evaluate(1);
 }
