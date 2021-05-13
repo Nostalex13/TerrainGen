@@ -7,6 +7,11 @@ public class EndlessTerain : MonoBehaviour
 {
     [SerializeField] private Transform viewer;
     [SerializeField] private int colliderLODIndex;
+    
+    [SerializeField] private LODInfo[] detailLevels;
+    [SerializeField] private Material mapMaterial;
+    private int chunkSize;
+    private int chunksVisible;
 
     private const float viewerThresholdForChunkUpdate = 25f;
     private const float sqrviewerThresholdForChunkUpdate =
@@ -18,14 +23,9 @@ public class EndlessTerain : MonoBehaviour
     private static Vector2 viewerPositionOld;
     private static TerrainGenerator terrainGenerator;
 
-    [SerializeField] private LODInfo[] detailLevels;
-    [SerializeField] private Material mapMaterial;
-    private int chunkSize;
-    private int chunksVisible;
-
     private static Dictionary<Vector2, TerrainChunk> terrainChunksDict = new Dictionary<Vector2, TerrainChunk>();
     private static List<TerrainChunk> terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
-    
+
     private void Awake()
     {
         colliderLODIndex = colliderLODIndex >= detailLevels.Length ? detailLevels.Length : colliderLODIndex;
@@ -111,11 +111,14 @@ public class EndlessTerain : MonoBehaviour
 
         private TerrainGenerator.MapData mapData;
         private int previousLODIndex = -1;
+        private int size;
+        
         private bool mapDataReceived;
         private bool hasSetCollider;
         
         public TerrainChunk(Vector2 coord, int size, Transform parent, Material material, LODInfo[] detailLevels, int colliderLODIndex)
         {
+            this.size = size;
             this.coord = coord;
             this.detailLevels = detailLevels;
             this.colliderLODIndex = colliderLODIndex;
@@ -191,6 +194,8 @@ public class EndlessTerain : MonoBehaviour
                         lodMesh.RequestMesh(mapData);
                     }
                 }
+
+                terrainGenerator.NatureGeneration.GeneratePoints(new Vector2(size, size), mapData.heightMap, meshObject.transform, terrainGenerator.TerrainData);
             }
 
             if (wasVisible != visible)
@@ -235,12 +240,12 @@ public class EndlessTerain : MonoBehaviour
             }
         }
 
-        public void SetVisible(bool visible)
+        private void SetVisible(bool visible)
         {
             meshObject.SetActive(visible);
         }
 
-        public bool IsVisible()
+        private bool IsVisible()
         {
             return meshObject.activeSelf;
         }

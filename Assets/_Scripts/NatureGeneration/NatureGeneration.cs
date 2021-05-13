@@ -2,18 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.TerrainAPI;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public static class NatureGeneration 
+public class NatureGeneration : MonoBehaviour
 {
-    public static List<Vector2> GeneratePoints(float radius, Vector2 sampleRegionSize, int numSamplesBeforeStop = 30)
+    private const float radius = 4;
+    private const int numSamplesBeforeStop = 4;
+
+    public void GeneratePoints(Vector2 size, float[,] heightMap, Transform parent, TerrainData terrainData)
     {
         float cellSize = radius / Mathf.Sqrt(2);
-
-        int[,] grid = new int[Mathf.CeilToInt(sampleRegionSize.x / cellSize), Mathf.CeilToInt(sampleRegionSize.y / cellSize)];
+        int[,] grid = new int[Mathf.CeilToInt(size.x / cellSize), Mathf.CeilToInt(size.y / cellSize)];
         List<Vector2> points = new List<Vector2>();
-        List<Vector2> spawnPoints = new List<Vector2>();
         
-        spawnPoints.Add(sampleRegionSize / 2f);
+        List<Vector2> spawnPoints = new List<Vector2>();
+        spawnPoints.Clear();
+        spawnPoints.Add(size / 2f);
 
         while (spawnPoints.Count > 0)
         {
@@ -27,13 +31,13 @@ public static class NatureGeneration
                 Vector2 direction = new Vector2(Mathf.Sin(angle), Mathf.Cos(angle));
                 Vector2 candidate = spawnCenter + direction * Random.Range(radius, 2 * radius);
 
-                if (IsValid(candidate, sampleRegionSize, cellSize, radius, points, grid))
+                if (IsValid(candidate, size, cellSize, radius, points, grid))
                 {
                     points.Add(candidate);
                     spawnPoints.Add(candidate);
                     grid[(int) (candidate.x / cellSize), (int) (candidate.y / cellSize)] = points.Count;
                     candidateAccepted = true;
-                    
+
                     break;
                 }
             }
@@ -43,11 +47,35 @@ public static class NatureGeneration
                 spawnPoints.RemoveAt(spawnIndex);
             }
         }
-
-        return points;
+        
+        PlantSomeWeed(parent, points, heightMap, (int)Mathf.Abs(size.x), terrainData);
     }
 
-    static bool IsValid(Vector2 candidate, Vector2 sampleRegionSize, float cellSize, float radius, List<Vector2> points, int[,] grid)
+    private void PlantSomeWeed(Transform parent, List<Vector2> points, float[,] heightMap, int size, TerrainData terrainData)
+    {
+        int length = (int)Mathf.Min(size, points.Count);
+        
+        for (int i = 0; i < length; i++)
+        {
+            var spawnPoint = points[i];
+            
+            int indexX = Mathf.CeilToInt(spawnPoint.x);
+            int indexY = Mathf.CeilToInt(spawnPoint.y);
+    
+            if (heightMap[indexX, indexY] >= 0.538 && heightMap[indexX, indexY] <= 0.638)
+            {
+                float heightActual = terrainData.heightCurve.Evaluate(heightMap[indexX, indexY]) * terrainData.meshHeightMultiplier;
+                var tree = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                tree.transform.parent = parent;
+                tree.transform.localScale = new Vector3(1f, 1f, 1f);
+                tree.transform.localPosition = new Vector3(spawnPoint.x - size / 2f, heightActual, spawnPoint.y - size / 2f);
+                // tree.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            }
+        }
+    }
+
+    private static bool IsValid(Vector2 candidate, Vector2 sampleRegionSize, float cellSize, float radius,
+        List<Vector2> points, int[,] grid)
     {
         if (candidate.x >= 0 && candidate.x < sampleRegionSize.x && candidate.y >= 0 &&
             candidate.y < sampleRegionSize.y)
@@ -64,7 +92,7 @@ public static class NatureGeneration
                 for (int y = searchStartY; y <= searchEndY; y++)
                 {
                     int pointIndex = grid[x, y] - 1;
-                    
+
                     if (pointIndex != -1)
                     {
                         float sqrMagnitude = (candidate - points[pointIndex]).sqrMagnitude;
@@ -78,8 +106,8 @@ public static class NatureGeneration
             }
 
             return true;
-        } 
-        
+        }
+
         return false;
     }
 }

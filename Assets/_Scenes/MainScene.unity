@@ -217,53 +217,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c0d8d571693f7a4592c1a88585aef61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &633498357
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 633498359}
-  - component: {fileID: 633498358}
-  m_Layer: 0
-  m_Name: TestNature
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &633498358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633498357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: faccfa34689239c418c0bc46da1ca30a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 1
-  regionSize: {x: 50, y: 50}
-  stopSamples: 1
-  displayRadius: 0.4
---- !u!4 &633498359
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633498357}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.746048, y: -14.439941, z: -2.8312416}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,6 +404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1323395430}
   - component: {fileID: 1323395429}
+  - component: {fileID: 1323395432}
   - component: {fileID: 1323395431}
   m_Layer: 0
   m_Name: TerrainGenerator
@@ -458,7 +412,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1323395429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,7 +429,6 @@ MonoBehaviour:
   noiseData: {fileID: 11400000, guid: 99f5eaa5468d21a4cac4047f31d2cdc0, type: 2}
   textureData: {fileID: 11400000, guid: 3248355918048b64188bb6ba9dea658f, type: 2}
   textureRenderer: {fileID: 1157112808}
-  meshRenderer: {fileID: 339399769}
   meshFilter: {fileID: 339399770}
   terrainMaterial: {fileID: 2100000, guid: f150fa8dfef04894b819a8488f8a1569, type: 2}
   chunkSizeIndex: 7
@@ -519,6 +472,20 @@ MonoBehaviour:
   - lod: 4
     visibleDistanceThreshold: 500
   mapMaterial: {fileID: 2100000, guid: f150fa8dfef04894b819a8488f8a1569, type: 2}
+--- !u!114 &1323395432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323395428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 939c2d411ddbbcd44b1199bddb228b75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 1
+  numSamplesBeforeStop: 2
 --- !u!1 &1944625643
 GameObject:
   m_ObjectHideFlags: 0

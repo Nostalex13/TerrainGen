@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(NatureGeneration))]
 public class TerrainGenerator : MonoBehaviour
 {
     [SerializeField] private TerrainData terrainData;
@@ -13,7 +14,6 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] private TextureData textureData;
 
     [Space] [SerializeField] private Renderer textureRenderer;
-    [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private MeshFilter meshFilter;
     [SerializeField] private Material terrainMaterial;
 
@@ -30,10 +30,13 @@ public class TerrainGenerator : MonoBehaviour
     private Queue<MapThreadInfo<MapData>> mapDataThreadQueue = new Queue<MapThreadInfo<MapData>>();
     private Queue<MapThreadInfo<MeshData>> meshDataThreadQueue = new Queue<MapThreadInfo<MeshData>>();
 
+    private NatureGeneration natureGeneration;
+    
     public bool AutoUpdate => autoUpdate;
     public TerrainData TerrainData => terrainData;
     public NoiseData NoiseData => noiseData;
-
+    public NatureGeneration NatureGeneration => natureGeneration;
+    
     public int mapChunkSize
     {
         get
@@ -51,6 +54,7 @@ public class TerrainGenerator : MonoBehaviour
 
     private void Awake()
     {
+        natureGeneration = GetComponent<NatureGeneration>();
         textureData.UpdateMeshHeight(terrainMaterial, terrainData.MinHeight, terrainData.MaxHeight);
         textureData.ApplyToMaterial(terrainMaterial);
     }
@@ -327,11 +331,6 @@ public class TerrainGenerator : MonoBehaviour
     public struct MapData
     {
         public float[,] heightMap;
-
-        public MapData(Color[] colorMap, float[,] heightMap)
-        {
-            this.heightMap = heightMap;
-        }
     }
 
     #endregion

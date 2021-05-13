@@ -49,7 +49,7 @@ public static class MeshGenerator
                 }
             }
         }
-        
+
         for (int y = 0; y < borderedSize; y += meshLODIncrement)
         {
             for (int x = 0; x < borderedSize; x += meshLODIncrement)
@@ -84,9 +84,9 @@ public static class MeshGenerator
 
 public class MeshData
 {
-    Vector3[] verticies;
-    int[] triangles;
-    Vector2[] uvs;
+    private Vector3[] verticies;
+    private int[] triangles;
+    private Vector2[] uvs;
     private Vector3[] bakedNormals;
 
     private Vector3[] borderVertices;
