@@ -29,7 +29,7 @@ public class EndlessTerain : MonoBehaviour
     private void Awake()
     {
         colliderLODIndex = colliderLODIndex >= detailLevels.Length ? detailLevels.Length : colliderLODIndex;
-        maxViewDistance = detailLevels[detailLevels.Length - 1].visibleDistanceThreshold;
+        maxViewDistance = 150;
         terrainGenerator = FindObjectOfType<TerrainGenerator>();
         chunkSize = terrainGenerator.mapChunkSize - 1;
         chunksVisible = Mathf.RoundToInt(maxViewDistance / chunkSize);
@@ -188,14 +188,13 @@ public class EndlessTerain : MonoBehaviour
                     {
                         previousLODIndex = lodIndex;
                         meshFilter.mesh = lodMesh.mesh;
+                        terrainGenerator.NatureGeneration.GeneratePoints(new Vector2(size, size), mapData.heightMap, meshObject.transform, terrainGenerator.TerrainData);
                     }
                     else if (!lodMesh.hasRequestedMesh)
                     {
                         lodMesh.RequestMesh(mapData);
                     }
                 }
-
-                terrainGenerator.NatureGeneration.GeneratePoints(new Vector2(size, size), mapData.heightMap, meshObject.transform, terrainGenerator.TerrainData);
             }
 
             if (wasVisible != visible)
@@ -238,6 +237,8 @@ public class EndlessTerain : MonoBehaviour
                     hasSetCollider = true;
                 }
             }
+
+            // var cou = lodMeshes[0].mesh.vert;
         }
 
         private void SetVisible(bool visible)
@@ -274,10 +275,24 @@ public class EndlessTerain : MonoBehaviour
             this.lod = lod;
         }
 
+        private static bool spawned = false;
+        
         private void OnMeshDataReceived(MeshData meshData)
         {
             mesh = meshData.CreateMesh();
             hasMesh = true;
+
+            // if (!spawned)
+            // {
+            //     for (int i = 0; i < meshData.cubesTransformsPos.Count; i++)
+            //     {
+            //         var tree = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //         tree.transform.localScale = new Vector3(1f, 1f, 1f);
+            //         tree.transform.localPosition = meshData.cubesTransformsPos[i];
+            //     }
+            //
+            //     spawned = true;
+            // }
 
             updateCallback();
         }

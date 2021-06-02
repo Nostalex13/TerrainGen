@@ -50,6 +50,8 @@ public static class MeshGenerator
             }
         }
 
+        meshData.cubesTransformsPos = new List<Vector3>();
+
         for (int y = 0; y < borderedSize; y += meshLODIncrement)
         {
             for (int x = 0; x < borderedSize; x += meshLODIncrement)
@@ -72,6 +74,8 @@ public static class MeshGenerator
                     meshData.AddTriangle(d, a,b);
                 }
 
+                meshData.cubesTransformsPos.Add(new Vector3(x, height, y));
+
                 vertexIndex++;
             }
         }
@@ -84,6 +88,7 @@ public static class MeshGenerator
 
 public class MeshData
 {
+    public List<Vector3> cubesTransformsPos;
     private Vector3[] verticies;
     private int[] triangles;
     private Vector2[] uvs;

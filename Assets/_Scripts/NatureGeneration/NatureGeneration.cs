@@ -6,8 +6,10 @@ using UnityEngine.Serialization;
 
 public class NatureGeneration : MonoBehaviour
 {
-    private const float radius = 4;
-    private const int numSamplesBeforeStop = 4;
+    private const float radius = 3;
+    private const int numSamplesBeforeStop = 2;
+
+    [SerializeField] private GameObject treePrefab;
 
     public void GeneratePoints(Vector2 size, float[,] heightMap, Transform parent, TerrainData terrainData)
     {
@@ -53,23 +55,22 @@ public class NatureGeneration : MonoBehaviour
 
     private void PlantSomeWeed(Transform parent, List<Vector2> points, float[,] heightMap, int size, TerrainData terrainData)
     {
-        int length = (int)Mathf.Min(size, points.Count);
-        
-        for (int i = 0; i < length; i++)
+        float halfSize = size / 2f;
+        for (int i = 0; i < points.Count; i++)
         {
             var spawnPoint = points[i];
             
             int indexX = Mathf.CeilToInt(spawnPoint.x);
             int indexY = Mathf.CeilToInt(spawnPoint.y);
     
-            if (heightMap[indexX, indexY] >= 0.538 && heightMap[indexX, indexY] <= 0.638)
+            if (heightMap[indexX, indexY] >= 0.47 && heightMap[indexX, indexY] <= 0.65)
             {
                 float heightActual = terrainData.heightCurve.Evaluate(heightMap[indexX, indexY]) * terrainData.meshHeightMultiplier;
-                var tree = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                tree.transform.parent = parent;
-                tree.transform.localScale = new Vector3(1f, 1f, 1f);
-                tree.transform.localPosition = new Vector3(spawnPoint.x - size / 2f, heightActual, spawnPoint.y - size / 2f);
-                // tree.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                var treeObj = Instantiate(treePrefab, parent, true);
+                treeObj.transform.localScale = new Vector3(1f, 1f, 1f);
+                float mirrorZ = -(indexY - halfSize); // Need to mirror z axes 
+                treeObj.transform.localPosition = new Vector3(indexX - halfSize, heightActual, mirrorZ);
+                treeObj.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
             }
         }
     }
