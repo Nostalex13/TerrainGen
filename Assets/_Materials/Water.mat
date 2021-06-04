@@ -8,14 +8,13 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Water
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 9925555bb55d6e34f95e83259522444f, type: 3}
   m_ShaderKeywords: _ALPHAPREMULTIPLY_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -36,6 +35,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DetailNormals:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -48,6 +51,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MinuteDetailNormals:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -56,15 +63,31 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _WaveNormals:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - testTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
+    - DepthFactor: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
+    - _DepthFactor: 1.74
+    - _DepthPow: 2.26
+    - _DetailIntensity: 1
     - _DetailNormalMapScale: 1
+    - _DetailScrollSpeed: 0
     - _DstBlend: 10
+    - _GlossAmount: 0.289
     - _GlossMapScale: 1
     - _Glossiness: 1
     - _GlossyReflections: 1
     - _Metallic: 0.5
+    - _MinuteDetailIntensity: 1
+    - _MinuteDetailScrollSpeed: 0
     - _Mode: 3
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -72,8 +95,15 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
+    - _WaveIntensity: 1
+    - _WaveScrollSpeed: 0
     - _ZWrite: 0
+    - testScale: 1
     m_Colors:
-    - _Color: {r: 0.12904951, g: 0.5951028, b: 0.9433962, a: 1}
+    - _BaseColor: {r: 0, g: 0.52865434, b: 1, a: 1}
+    - _Color: {r: 0.8301887, g: 0.1527234, b: 0.1527234, a: 0.6745098}
+    - _ColorDeep: {r: 0.24154504, g: 0.5636818, b: 0.8679245, a: 1}
+    - _ColorShallow: {r: 0.36209506, g: 0.853766, b: 0.9716981, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecularColor: {r: 0.13381095, g: 0.7216928, b: 0.9150943, a: 1}
   m_BuildTextureStacks: []
