@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -23,7 +21,7 @@ public class TextureData : UpdatableData
         mat.SetFloatArray("base_texture_scale", layers.Select(x => x.textureScale).ToArray());
         Texture2DArray texture2DArray = GenerateTextureArray(layers.Select(x => x.texture).ToArray());
         mat.SetTexture("base_textures", texture2DArray);
-        
+
         UpdateMeshHeight(mat, savedMinHeight, savedMaxHeight);
     }
 
@@ -44,7 +42,7 @@ public class TextureData : UpdatableData
         {
             textureArray.SetPixels(textures[i].GetPixels(), i);
         }
-        
+
         textureArray.Apply();
 
         return textureArray;

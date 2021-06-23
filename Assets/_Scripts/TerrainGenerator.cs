@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -19,9 +20,12 @@ public class TerrainGenerator : MonoBehaviour
 
     [Range(0, MeshGenerator.supportedChunkSizesLength - 1)]
     public int chunkSizeIndex;
+
     [Range(0, MeshGenerator.supportedFlatshadedChunkSizesLength - 1)]
     public int chunkFlatshadedSizeIndex;
-    [Range(0, MeshGenerator.supportedLODs - 1)] [SerializeField] private int previewLevelOfDetail;
+
+    [Range(0, MeshGenerator.supportedLODs - 1)] [SerializeField]
+    private int previewLevelOfDetail;
 
     [Space] [SerializeField] private bool autoUpdate = false;
     [SerializeField] private MapDrawMode drawMode = MapDrawMode.Noise;
@@ -31,19 +35,20 @@ public class TerrainGenerator : MonoBehaviour
     private Queue<MapThreadInfo<MeshData>> meshDataThreadQueue = new Queue<MapThreadInfo<MeshData>>();
 
     private NatureGeneration natureGeneration;
-    
+
     public bool AutoUpdate => autoUpdate;
     public TerrainData TerrainData => terrainData;
     public NoiseData NoiseData => noiseData;
     public NatureGeneration NatureGeneration => natureGeneration;
-    
+
     public int mapChunkSize
     {
         get
         {
             if (terrainData.useFlatShading)
             {
-                return MeshGenerator.supportedFlatshadedChunkSizes[chunkFlatshadedSizeIndex] - 1; // For flat shading smaller chunk sizes are required
+                return MeshGenerator.supportedFlatshadedChunkSizes[chunkFlatshadedSizeIndex] -
+                       1; // For flat shading smaller chunk sizes are required
             }
             else
             {
@@ -86,7 +91,7 @@ public class TerrainGenerator : MonoBehaviour
             {
                 falloffMap = FalloffGenerator.GenerateFalloffMap(mapChunkSize + 2);
             }
-            
+
             for (int y = 0; y < mapChunkSize + 2; y++)
             {
                 for (int x = 0; x < mapChunkSize + 2; x++)
@@ -95,7 +100,7 @@ public class TerrainGenerator : MonoBehaviour
                 }
             }
         }
-        
+
         return new MapData()
         {
             heightMap = noiseMap
@@ -119,7 +124,8 @@ public class TerrainGenerator : MonoBehaviour
                         previewLevelOfDetail, terrainData.useFlatShading));
                 break;
             case MapDrawMode.FalloffMap:
-                DrawTexture_Editor(TextureGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSize)));
+                DrawTexture_Editor(
+                    TextureGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSize)));
                 break;
         }
     }
