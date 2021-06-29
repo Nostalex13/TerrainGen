@@ -60,44 +60,20 @@ Shader "Custom/Water Unlit"
 
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
-            float _DepthFactor;
             float _DepthPow;
 
             v2f vert(appdata_base v)
             {
                 v2f o;
                 float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-
-                // Vertex wave animation
-                float vertexAnimWeight = length(worldPos - _WorldSpaceCameraPos);
-                vertexAnimWeight = saturate(pow(vertexAnimWeight / 10, 3));
-            	
-                float waveAnimDetail = 100;
-				float maxWaveAmplitude = 0.001 * vertexAnimWeight; // 0.001
-				float waveAnimSpeed = 1;
-
                 float3 worldNormal = normalize(mul(unity_ObjectToWorld, float4(v.normal, 0)).xyz);
-                float theta = acos(worldNormal.z);
-				float phi = atan2(v.vertex.y, v.vertex.x);
-				float waveA = sin(_Time.y * waveAnimSpeed + theta * waveAnimDetail);
-				float waveB = sin(_Time.y * waveAnimSpeed + phi * waveAnimDetail);
-				float waveVertexAmplitude = (waveA + waveB) * maxWaveAmplitude;
-				v.vertex = v.vertex;
 
                 o.worldNormal = worldNormal;
 				o.worldPos = worldPos;
 				o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.texcoord.xy;
 				o.screenPos = ComputeScreenPos(o.vertex);
-                
-                float3 viewVector = mul(unity_CameraInvProjection, float4((o.screenPos.xy/o.screenPos.w) * 2 - 1, 0, -1));
-                o.viewDir = mul(unity_CameraToWorld, float4(viewVector,0));
-				// o.viewDir = UnityWorldSpaceViewDir(o.worldPos);
-                
-                // o.vertex = UnityObjectToClipPos(v.vertex);
-                // COMPUTE_EYEDEPTH(o.screenPos.w);
-                //
-                // o.worldNormal = UnityObjectToWorldNormal(v.worldNormal);
+				o.viewDir = -WorldSpaceViewDir(v.vertex);
 
                 return o;
             }
@@ -171,9 +147,9 @@ Shader "Custom/Water Unlit"
                 float3 viewDir = normalize(i.viewDir);
 
 				// Specular normal
-				float waveSpeed = 0.35;
-				float waveNormalScale = 0.05;
-				float waveStrength = 0.4;
+				float waveSpeed = 0.25;
+				float waveNormalScale = 0.03;
+				float waveStrength = 0.2;
 
             	float2 waveOffsetA = float2(_Time.x * waveSpeed, _Time.x * waveSpeed * 0.8);
 				float2 waveOffsetB = float2(_Time.x * waveSpeed * - 0.8, _Time.x * waveSpeed * -0.3);
@@ -187,7 +163,7 @@ Shader "Custom/Water Unlit"
 				f2 = smoothstep(0,0.2,f2);
             	float g = 1-((pow(dot(waveNormal1,i.worldNormal), 0.9)) > 0.93);
 				float g2 = 1-((pow(dot(waveNormal2,i.worldNormal),0.9)) > 0.93);
-				float glitter = g*g2 * 0.2 * f2;
+				float glitter = g * g2 * 0.3 * f2;
 
             	// Specular highlight
 				float specularHighlight = calculateSpecular(specWaveNormal, viewDir, _Smoothness);
@@ -197,24 +173,18 @@ Shader "Custom/Water Unlit"
 				float dstToWater = i.screenPos.w;
 				float waterViewDepth = dstToTerrain - dstToWater;
 				// float waterDensityMap = density * 500; // no huensity oke
-
-				// Make water appear more transparent when viewed from above
-				float alphaFresnel = 1-saturate(pow(saturate(dot(-viewDir, i.worldNormal)), _AlphaFresnelPow));
-				alphaFresnel = max(0.7, alphaFresnel);
-				float alphaFresnelNearFix = pow(saturate((i.screenPos.w - _ProjectionParams.y) / 4), 3);
-				alphaFresnel = lerp(1, alphaFresnel, alphaFresnelNearFix);
             	
             	// Fade water at intersection with geometry
 				float alphaEdge = 1 - exp(-waterViewDepth * _EdgeFade);
 
             	// Calculate final alpha
 				float opaqueWater = max(0, specularHighlight > 0.5);
-				float alpha = saturate(max(opaqueWater, alphaEdge * alphaFresnel));
+				float alpha = saturate(max(opaqueWater, alphaEdge));
 
             	// -------- Lighting and colour output --------
 				float lighting = saturate(dot(i.worldNormal, dirToSun));
             	
-            	fixed4 col = lerp(_ColorShallow, _ColorDeep, 1 - exp(-waterViewDepth * _DepthFactor));
+            	fixed4 col = lerp(_ColorShallow, _ColorDeep, 1 - exp(-waterViewDepth * _ColorDepthCoef));
                 col.rgb = saturate(col * lighting + unity_AmbientSky) + specularHighlight;
             	col.rgb += glitter;
                 col.a = alpha;
