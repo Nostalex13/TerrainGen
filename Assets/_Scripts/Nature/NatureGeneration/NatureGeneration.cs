@@ -57,6 +57,7 @@ public class NatureGeneration : MonoBehaviour
     {
         float halfSize = size / 2f;
         
+        // Debug height verticies 
         // for (int x = 0; x < heightMap.GetLength(0); x++)
         // {
         //     for (int y = 0; y < heightMap.GetLength(1); y++)
@@ -79,7 +80,6 @@ public class NatureGeneration : MonoBehaviour
             int indexX = Mathf.RoundToInt(spawnPoint.x);
             int indexY = Mathf.RoundToInt(spawnPoint.y);
 
-            // float mediumHeight = GetMiddleHeight(heightMap, indexX, indexY);
             float mediumHeight = heightMap[indexX, indexY];
 
             if (mediumHeight >= 0.47 && mediumHeight <= 0.65)
@@ -92,60 +92,6 @@ public class NatureGeneration : MonoBehaviour
                 treeObj.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
             }
         }
-    }
-
-    private float GetMiddleHeight(float[,] heightMap, int indexX, int indexY)
-    {
-        float mediumHeight = heightMap[indexX, indexY];
-        float checksPassed = 1;
-        
-        bool xZeroCheck = indexX - 1 >= 0;
-        bool yZeroCheck = indexY - 1 >= 0;
-        bool xLessThanCount = indexX < heightMap.GetLength(0);
-        bool yLessThanCount = indexY < heightMap.GetLength(1);
-
-        if (xZeroCheck && yZeroCheck)
-        {
-            mediumHeight += heightMap[indexX - 1, indexY - 1];
-            checksPassed++;
-        }
-        if (yZeroCheck)
-        {
-            mediumHeight += heightMap[indexX, indexY - 1];
-            checksPassed++;
-        }
-        if (xLessThanCount && yZeroCheck)
-        {
-            mediumHeight += heightMap[indexX + 1, indexY - 1];
-            checksPassed++;
-        }
-        if (xZeroCheck)
-        {
-            mediumHeight += heightMap[indexX - 1, indexY];
-            checksPassed++;
-        }
-        if (xLessThanCount)
-        {
-            mediumHeight += heightMap[indexX + 1, indexY];
-            checksPassed++;
-        }
-        if (xZeroCheck && yLessThanCount)
-        {
-            mediumHeight += heightMap[indexX - 1, indexY + 1];
-            checksPassed++;
-        }
-        if (yLessThanCount)
-        {
-            mediumHeight += heightMap[indexX, indexY + 1];
-            checksPassed++;
-        }
-        if (xLessThanCount && yLessThanCount)
-        {
-            mediumHeight += heightMap[indexX + 1, indexY + 1];
-            checksPassed++;
-        }
-        
-        return mediumHeight / checksPassed;
     }
 
     private static bool IsValid(Vector2 candidate, Vector2 sampleRegionSize, float cellSize, float radius,
