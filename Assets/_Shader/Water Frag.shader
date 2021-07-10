@@ -6,7 +6,6 @@ Shader "Custom/Water Unlit"
         _ColorDeep("Deep Color", Color) = (1, 1, 1)
         _ColorShallow("Shallow Color", Color) = (1, 1, 1)
         _ColorDepthCoef("Color depth", Range(0.01, 1)) = 1
-        _AlphaFresnelPow("Alpha Fresnel Pow", float) = 1
         _Smoothness("Smoothness", Range(0.01, 1)) = 1
     	_EdgeFade("Geometry edge fade", Range(0.001, 10)) = 1
     	
@@ -35,6 +34,7 @@ Shader "Custom/Water Unlit"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normal : TEXCOORD1;
             };
 
             struct v2f
@@ -50,9 +50,7 @@ Shader "Custom/Water Unlit"
             float4 _ColorDeep;
             float4 _ColorShallow;
             float _ColorDepthCoef;
-            // float _ShoreFadeStrength;
             float _Smoothness;
-            float _AlphaFresnelPow;
             float _EdgeFade;
 
             sampler2D _NormalA;
@@ -71,7 +69,7 @@ Shader "Custom/Water Unlit"
                 o.worldNormal = worldNormal;
 				o.worldPos = worldPos;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.texcoord.xy;
+                o.uv = v.vertex.xy;
 				o.screenPos = ComputeScreenPos(o.vertex);
 				o.viewDir = -WorldSpaceViewDir(v.vertex);
 
@@ -147,8 +145,8 @@ Shader "Custom/Water Unlit"
                 float3 viewDir = normalize(i.viewDir);
 
 				// Specular normal
-				float waveSpeed = 0.25;
-				float waveNormalScale = 0.03;
+				float waveSpeed = 0.15;
+				float waveNormalScale = 0.025;
 				float waveStrength = 0.2;
 
             	float2 waveOffsetA = float2(_Time.x * waveSpeed, _Time.x * waveSpeed * 0.8);
