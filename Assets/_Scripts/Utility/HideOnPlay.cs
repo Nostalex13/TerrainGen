@@ -7,3 +7,4 @@ public class HideOnPlay : MonoBehaviour
         gameObject.SetActive(false);
     }
 }
+ 

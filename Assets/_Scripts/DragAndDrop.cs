@@ -1,6 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class DragAndDrop : MonoBehaviour
@@ -14,6 +12,14 @@ public class DragAndDrop : MonoBehaviour
     private void Update()
     {
         TrySelect();
+    }
+
+    public async void DoStuff()
+    {
+        Task tsk = Task.Run(() =>
+        {
+            Debug.Log("Waiting");
+        });
     }
 
     private void TrySelect()
