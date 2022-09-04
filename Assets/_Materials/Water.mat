@@ -108,7 +108,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _ShoreFadeStrength: 0.198
-    - _Smoothness: 0.122
+    - _Smoothness: 0.084
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
