@@ -23,5 +23,9 @@ public class CameraFollow : MonoBehaviour
             var followPos = _target.position + _offset;
             _transform.position = Vector3.Lerp(_transform.position, followPos, _followSmoothness);
         }
+        else
+        {
+            Debug.Log("camera target is null");
+        }
     }
 }
