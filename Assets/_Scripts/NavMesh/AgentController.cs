@@ -21,6 +21,11 @@ public class AgentController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
+            if (_agent == null)
+            {
+                Debug.Log("agent is null");
+                return;
+            }
             hits = new RaycastHit[1];
 
             _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
