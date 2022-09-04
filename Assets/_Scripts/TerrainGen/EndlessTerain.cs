@@ -35,7 +35,7 @@ public class EndlessTerain : MonoBehaviour
         colliderLODIndex = colliderLODIndex >= detailLevels.Length ? detailLevels.Length : colliderLODIndex;
         maxViewDistance = 50;
         terrainGenerator = FindObjectOfType<TerrainGenerator>();
-        chunkSize = terrainGenerator.mapChunkSize - 1;
+        chunkSize = terrainGenerator.mapChunkSizes - 1;
         chunksVisible = Mathf.RoundToInt(maxViewDistance / chunkSize);
 
         UpdateVisibleChunks();
