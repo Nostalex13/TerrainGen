@@ -26,7 +26,8 @@ public class CameraFollow : MonoBehaviour
         else
         {
             Debug.Log("camera target is null");
-            Debug.Log("cameras targetiiinggass");
+            Debug.Log("cameras targetiiinggass123");
+            Debug.Log("cameras targetiiinggass412");
         }
     }
 }
