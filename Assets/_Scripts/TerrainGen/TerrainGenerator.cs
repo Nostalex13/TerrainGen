@@ -41,7 +41,7 @@ public class TerrainGenerator : MonoBehaviour
     public NoiseData NoiseData => noiseData;
     public NatureGeneration NatureGeneration => natureGeneration;
 
-    public int mapChunkSize
+    public int mapChunkSizes
     {
         get
         {
@@ -81,7 +81,7 @@ public class TerrainGenerator : MonoBehaviour
 
     private MapData GenerateMapData(Vector2 center)
     {
-        var noiseMap = GenerateNoiseMap(center, mapChunkSize + 2, noiseData.seed, noiseData.noiseScale,
+        var noiseMap = GenerateNoiseMap(center, mapChunkSizes + 2, noiseData.seed, noiseData.noiseScale,
             noiseData.octaves, noiseData.persistance, noiseData.lacunarity,
             noiseData.normalizeMode);
 
@@ -89,12 +89,12 @@ public class TerrainGenerator : MonoBehaviour
         {
             if (falloffMap == null)
             {
-                falloffMap = FalloffGenerator.GenerateFalloffMap(mapChunkSize + 2);
+                falloffMap = FalloffGenerator.GenerateFalloffMap(mapChunkSizes + 2);
             }
 
-            for (int y = 0; y < mapChunkSize + 2; y++)
+            for (int y = 0; y < mapChunkSizes + 2; y++)
             {
-                for (int x = 0; x < mapChunkSize + 2; x++)
+                for (int x = 0; x < mapChunkSizes + 2; x++)
                 {
                     noiseMap[x, y] = Mathf.Clamp(noiseMap[x, y] - falloffMap[x, y], 0, 1);
                 }
@@ -125,7 +125,7 @@ public class TerrainGenerator : MonoBehaviour
                 break;
             case MapDrawMode.FalloffMap:
                 DrawTexture_Editor(
-                    TextureGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSize)));
+                    TextureGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSizes)));
                 break;
         }
     }
@@ -147,11 +147,11 @@ public class TerrainGenerator : MonoBehaviour
         meshFilter.sharedMesh = null;
     }
 
-    private float[,] GenerateNoiseMap(Vector2 _positionOffset, int _mapChunkSize, int _seed, float _noiseScale,
+    private float[,] GenerateNoiseMap(Vector2 _positionOffset, int _mapChunkSizes, int _seed, float _noiseScale,
         int _octaves, float _persistance, float _lacunarity, NormalizeMode _normalizeMode)
     {
         _positionOffset += noiseData.offset;
-        var noiseMap = new float[_mapChunkSize, _mapChunkSize];
+        var noiseMap = new float[_mapChunkSizes, _mapChunkSizes];
 
         if (_noiseScale <= 0f)
         {
@@ -177,12 +177,12 @@ public class TerrainGenerator : MonoBehaviour
         float maxLocalNoiseHeight = float.MinValue;
         float minLocalNoiseHeight = float.MaxValue;
 
-        float halfWidth = _mapChunkSize * 0.5f;
-        float halfHeight = _mapChunkSize * 0.5f;
+        float halfWidth = _mapChunkSizes * 0.5f;
+        float halfHeight = _mapChunkSizes * 0.5f;
 
-        for (int y = 0; y < _mapChunkSize; y++)
+        for (int y = 0; y < _mapChunkSizes; y++)
         {
-            for (int x = 0; x < _mapChunkSize; x++)
+            for (int x = 0; x < _mapChunkSizes; x++)
             {
                 amplitude = 1;
                 frequency = 1;
@@ -214,9 +214,9 @@ public class TerrainGenerator : MonoBehaviour
             }
         }
 
-        for (int y = 0; y < _mapChunkSize; y++)
+        for (int y = 0; y < _mapChunkSizes; y++)
         {
-            for (int x = 0; x < _mapChunkSize; x++)
+            for (int x = 0; x < _mapChunkSizes; x++)
             {
                 switch (_normalizeMode)
                 {
