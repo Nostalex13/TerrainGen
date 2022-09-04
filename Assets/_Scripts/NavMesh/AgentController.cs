@@ -12,8 +12,6 @@ public class AgentController : MonoBehaviour
     private RaycastHit[] hits;
     private Camera _mainCamera;
 
-    public static int valuess = 123;
-
     private void Awake()
     {
         _mainCamera = Camera.main;
