@@ -26,6 +26,7 @@ public class CameraFollow : MonoBehaviour
         else
         {
             Debug.Log("camera target is null");
+            Debug.Log("cameras targetiiinggass");
         }
     }
 }
