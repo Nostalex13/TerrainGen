@@ -193,7 +193,7 @@ public class EndlessTerain : MonoBehaviour
 
             bool wasVisible = IsVisible();
             float viewerDistanceFromNearestEdge =
-                Mathf.Sqrt(bounds.SqrDistance(viewerPosition)); // TODO get rid of sqrt
+                Mathf.Sqrt(bounds.SqrDistance(viewerPosition)); // TODO get rid of sqrt heavy
             bool visible = viewerDistanceFromNearestEdge <= maxViewDistance;
 
             if (visible)
