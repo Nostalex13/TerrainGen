@@ -42,6 +42,7 @@ public class EndlessTerain : MonoBehaviour
         UpdateVisibleChunks();
     }
 
+    // Update
     private void Update()
     {
         var position = viewer.position;
