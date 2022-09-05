@@ -24,7 +24,7 @@ public class TextureData : UpdatableData
 
         UpdateMeshHeight(mat, savedMinHeight, savedMaxHeight);
     }
-
+    
     public void UpdateMeshHeight(Material mat, float minHeight, float maxHeight)
     {
         savedMinHeight = minHeight;

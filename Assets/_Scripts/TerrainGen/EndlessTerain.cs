@@ -30,6 +30,7 @@ public class EndlessTerain : MonoBehaviour
     private static Dictionary<Vector2, TerrainChunk> terrainChunksDict = new Dictionary<Vector2, TerrainChunk>();
     private static List<TerrainChunk> terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
 
+    // Awake called
     private void Awake()
     {
         colliderLODIndex = colliderLODIndex >= detailLevels.Length ? detailLevels.Length : colliderLODIndex;
