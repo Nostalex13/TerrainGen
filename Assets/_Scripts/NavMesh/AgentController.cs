@@ -20,6 +20,7 @@ public class AgentController : MonoBehaviour
         _mainCamera = Camera.main;
     }
 
+    // upadte
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse1))
