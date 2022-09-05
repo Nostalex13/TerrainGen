@@ -12,6 +12,7 @@ public class NavMeshGenerator : MonoBehaviour, INavMeshSurface
 {
     private HashSet<NavMeshSurface> _navMeshSurfaces = new HashSet<NavMeshSurface>();
 
+    // Awake
     private void Awake()
     {
         EventManager.SubscribeGlobal<INavMeshSurface>(this);
