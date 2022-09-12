@@ -12,7 +12,7 @@ public class CameraFollow : MonoBehaviour
     private Transform _transform;
 
     // awawkeasd123123
-    // asdasdasd
+    // asdasdasd123123
     private void Awake()
     {
         _transform = transform;
