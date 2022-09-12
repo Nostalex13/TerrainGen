@@ -57,6 +57,7 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
+    // Awake
     private void Awake()
     {
         natureGeneration = GetComponent<NatureGeneration>();
