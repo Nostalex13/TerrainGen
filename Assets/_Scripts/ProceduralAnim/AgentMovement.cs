@@ -17,6 +17,7 @@ public class AgentMovement : MonoBehaviour
         _previousPos = _transform.position;
     }
 
+    //update
     void Update()
     {
         _currentPos = _transform.position;
