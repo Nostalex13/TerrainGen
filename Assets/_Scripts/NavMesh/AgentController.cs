@@ -14,7 +14,7 @@ public class AgentController : MonoBehaviour
 
     public static int valuess = 123;
 
-    // awake123123123asdasdasd
+    // awake123123123asdasdasdasd
     private void Awake()
     {
         _mainCamera = Camera.main;
