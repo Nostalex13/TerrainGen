@@ -16,6 +16,7 @@ public class CameraFollow : MonoBehaviour
         _transform = transform;
     }
 
+    // Larte
     private void LateUpdate()
     {
         if (_target != null)
