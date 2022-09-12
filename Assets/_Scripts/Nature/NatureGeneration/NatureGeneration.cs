@@ -94,6 +94,7 @@ public class NatureGeneration : MonoBehaviour
         }
     }
 
+    // valid
     private static bool IsValid(Vector2 candidate, Vector2 sampleRegionSize, float cellSize, float radius,
         List<Vector2> points, int[,] grid)
     {
