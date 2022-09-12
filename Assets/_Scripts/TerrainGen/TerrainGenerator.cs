@@ -107,6 +107,7 @@ public class TerrainGenerator : MonoBehaviour
         };
     }
 
+    // draw
     public void DrawMap_Editor()
     {
         textureData.UpdateMeshHeight(terrainMaterial, terrainData.MinHeight, terrainData.MaxHeight);
