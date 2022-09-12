@@ -24,6 +24,7 @@ public static class FalloffGenerator
         return map;
     }
 
+    // Evaluate
     private static float Evaluate(float value)
     {
         float a = 3;
