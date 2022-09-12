@@ -9,6 +9,7 @@ public class AgentMovement : MonoBehaviour
 
     private Transform _transform;
 
+    // awawke
     private void Awake()
     {
         _transform = transform;
