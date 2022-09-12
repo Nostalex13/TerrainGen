@@ -86,6 +86,7 @@ public class TerrainGenerator : MonoBehaviour
             noiseData.octaves, noiseData.persistance, noiseData.lacunarity,
             noiseData.normalizeMode);
 
+        // asdasdasd
         if (terrainData.doApplyFallofMap)
         {
             if (falloffMap == null)

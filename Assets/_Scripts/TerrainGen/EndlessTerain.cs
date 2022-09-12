@@ -15,6 +15,7 @@ public class EndlessTerain : MonoBehaviour
     private int chunkSize;
     private int chunksVisible;
 
+    // viewrer
     private const float viewerThresholdForChunkUpdate = 25f;
 
     private const float sqrviewerThresholdForChunkUpdate =

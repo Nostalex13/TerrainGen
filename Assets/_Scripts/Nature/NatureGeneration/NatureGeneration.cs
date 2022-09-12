@@ -55,7 +55,7 @@ public class NatureGeneration : MonoBehaviour
     {
         float halfSize = size / 2f;
         
-        // TODO delete
+        // TODO delete?
         // Debug height verticies 
         // for (int x = 0; x < heightMap.GetLength(0); x++)
         // {
