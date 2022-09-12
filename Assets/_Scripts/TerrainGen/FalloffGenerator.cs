@@ -25,7 +25,7 @@ public static class FalloffGenerator
         return map;
     }
 
-    // Evaluate123
+    // Evaluate123123123
     private static float Evaluate(float value)
     {
         float a = 3;
