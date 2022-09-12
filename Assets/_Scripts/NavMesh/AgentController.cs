@@ -14,13 +14,11 @@ public class AgentController : MonoBehaviour
 
     public static int valuess = 123;
 
-    // Awake
     private void Awake()
     {
         _mainCamera = Camera.main;
     }
 
-    // upadte
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse1))
