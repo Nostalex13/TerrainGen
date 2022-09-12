@@ -16,7 +16,7 @@ public class CameraFollow : MonoBehaviour
         _transform = transform;
     }
 
-    // ;ateasd
+    // ;ateasdasd
     private void LateUpdate()
     {
         if (_target != null)
