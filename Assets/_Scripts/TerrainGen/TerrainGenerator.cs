@@ -79,6 +79,7 @@ public class TerrainGenerator : MonoBehaviour
 
     #region Drawing Map
 
+    // generate map data
     private MapData GenerateMapData(Vector2 center)
     {
         var noiseMap = GenerateNoiseMap(center, mapChunkSizes + 2, noiseData.seed, noiseData.noiseScale,
